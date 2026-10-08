@@ -79,4 +79,13 @@ class ItemMergeTest {
         assertEquals(notDeleted, merge(notDeleted, deletedOnly))
         assertEquals(notDeleted, merge(deletedOnly, notDeleted))
     }
+
+    @Test
+    fun `when updatedAt is equal and both are deleted the one that is not checked is kept`() {
+        val deletedNotChecked = ShoppingItem("milk", "milk", false, true, 1_000)
+        val deletedChecked = deletedNotChecked.copy(checked = true)
+
+        assertEquals(deletedChecked, merge(deletedNotChecked, deletedChecked))
+        assertEquals(deletedChecked, merge(deletedChecked, deletedNotChecked))
+    }
 }
