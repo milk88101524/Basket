@@ -61,4 +61,13 @@ class ItemMergeTest {
         assertEquals(kept, merge(kept, gone))
         assertEquals(kept, merge(gone, kept))
     }
+
+    @Test
+    fun `when updatedAt is equal the item that is not checked is kept`() {
+        val kept = ShoppingItem("milk", "milk", false, false, 1_000)
+        val ticked = kept.copy(checked = true)
+
+        assertEquals(kept, merge(kept, ticked))
+        assertEquals(kept, merge(ticked, kept))
+    }
 }
