@@ -97,4 +97,20 @@ class ItemMergeTest {
         assertEquals(apple, merge(apple, milk))
         assertEquals(apple, merge(milk, apple))
     }
+
+    @Test
+    fun `merge gives the same answer whichever item comes first`() {
+        val items = listOf(
+            ShoppingItem("milk", "apple", false, false, 1_000),   // 基準
+            ShoppingItem("milk", "milk", false, false, 1_000),   // name 不同
+            ShoppingItem("milk", "apple", true, false, 1_000),   // checked 不同
+            ShoppingItem("milk", "apple", false, true, 1_000),   // deleted 不同
+        )
+
+        for (a in items) {
+            for (b in items) {
+                assertEquals(merge(a, b), merge(b, a))
+            }
+        }
+    }
 }
