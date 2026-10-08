@@ -1,10 +1,15 @@
 package dev.milk.basket.domain
 
 fun merge(a: ShoppingItem, b: ShoppingItem): ShoppingItem {
-    return if (a.updatedAt < b.updatedAt) {
-        b // a < b
+    // name 先不考慮
+    return if (a.updatedAt == b.updatedAt) {
+        if (!a.deleted) { a } else { b }
     } else {
-        a // a >= b
+        if (a.updatedAt < b.updatedAt) {
+            b // a < b
+        } else {
+            a // a >= b
+        }
     }
 }
 
