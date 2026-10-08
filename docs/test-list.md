@@ -5,11 +5,11 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 ## Merging two copies of the shopping list
 
 - [x] 1. Same item on both sides: the one updated later wins (`3e1271d`, `8e6786a`)
-- [ ] 2. Same item, same `updatedAt`, different content: a rule that gives the same answer on every device (see decisions)
+- [x] 2. Same item, same `updatedAt`, different content: a rule that gives the same answer on every device (see decisions)
   - [x] 2a. Only `deleted` differs: the one that is not deleted is kept (`582c543`, `7424fb2`)
   - [x] 2b. Only `checked` differs: the one that is not checked is kept (`d83d2e1`, `c8ce6ab`)
   - [x] 2c. `deleted` and `checked` point to different sides: `deleted` decides (`2694462`, `db2bdf4`)
-  - [ ] 2d. Only the name differs: the same one is kept whichever side is given first
+  - [x] 2d. Only the name differs: the same one is kept whichever side is given first (`8e4ae22`, `4e479d9`)
   - [x] 2e. Both deleted, only `checked` differs: the one that is not checked is kept (`2ea07b8`, `661da46`, `62d43c3`)
 - [x] 3. An item only the local side has is kept (`5443e023`, `e18751cb`)
 - [x] 3b. The same item in both lists: merged with the rule of test 1 (`2e007d7`, `ad44b5f`, `be62b52`, `c9fb51a`)
@@ -18,7 +18,7 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 - [ ] 5. One side edited, the other deleted: the later one wins, and the user is told
 - [ ] 6. Deleted on both sides: stays deleted
 - [ ] 7. One side renamed, the other ticked the same item: the whole item is compared, so the earlier change is lost (documents the known limit of the rule)
-- [ ] 8. `merge(a, b) == merge(b, a)` and `merge(a, a) == a`
+- [x] 8. `merge(a, b) == merge(b, a)` and `merge(a, a) == a` (`f23b25b`, `b07ce79`). The sample items all have the same `updatedAt`, so only the tie rule is covered; add other `updatedAt` values later
 
 ## Later (not the merge)
 
