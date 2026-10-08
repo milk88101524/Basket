@@ -5,6 +5,7 @@ fun merge(a: ShoppingItem, b: ShoppingItem): ShoppingItem = when {
     a.updatedAt < b.updatedAt -> b
     a.deleted != b.deleted -> if (a.deleted) b else a
     a.checked != b.checked -> if (a.checked) b else a
+    a.name != b.name -> if (a.name < b.name) a else b
     else -> a
 }
 
