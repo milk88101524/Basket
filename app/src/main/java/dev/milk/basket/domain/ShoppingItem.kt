@@ -5,5 +5,5 @@ data class ShoppingItem(
     val name: String,
     val checked: Boolean,
     val deleted: Boolean,
-    val updateAt: Long
+    val updatedAt: Long
 )
