@@ -8,4 +8,4 @@ fun merge(a: ShoppingItem, b: ShoppingItem): ShoppingItem {
     }
 }
 
-fun mergeList(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> = emptyList()
+fun mergeList(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> = remote
