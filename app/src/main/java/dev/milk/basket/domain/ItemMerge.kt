@@ -4,7 +4,9 @@ fun merge(a: ShoppingItem, b: ShoppingItem): ShoppingItem = when {
     a.updatedAt > b.updatedAt -> a
     a.updatedAt < b.updatedAt -> b
     a.deleted -> b
+    b.deleted -> a
     a.checked -> b
+    b.checked -> a
     else -> a
 }
 
