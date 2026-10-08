@@ -15,7 +15,7 @@ fun mergeList(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<Shopp
             result.add(itemLocal)
         } else {
             val index = remote.indexOfFirst { it.id == itemLocal.id }
-            result[index] = itemLocal
+            result[index] = merge(itemLocal, result[index])
         }
     }
     return result
