@@ -34,4 +34,14 @@ class ItemMergeTest {
         val result = mergeList(local = listOf(localMilk), remote = listOf(remoteMilk))
         assertEquals(listOf(localMilk), result)
     }
+
+    @Test
+    fun `an older local item does not replace a newer remote item`() {
+        val localMilk = ShoppingItem("milk", "milk", false, false, 1_000)
+        val remoteMilk = localMilk.copy(name = "milk 2L", updatedAt = 2_000)
+
+        val result = mergeList(local = listOf(localMilk), remote = listOf(remoteMilk))
+
+        assertEquals(listOf(remoteMilk), result)
+    }
 }
