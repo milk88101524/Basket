@@ -18,3 +18,4 @@ A delete is not treated differently from an edit. A deleted item stays in the li
 
 - Same `updatedAt`, different content: "the local copy wins" gives different answers on two devices, which then never agree. The rule has to be the same everywhere (test 2 and test 8 will show it).
 - One user on several devices, or a list shared by several people? Not decided; the merge is the same in both cases.
+- Order of the merged list: now the items of the local list come first, then the ones only the remote has. No test depends on it. Decide when a screen needs a fixed order, and pin it with a test then.

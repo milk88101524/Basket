@@ -7,7 +7,8 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 - [x] 1. Same item on both sides: the one updated later wins (`3e1271d`, `8e6786a`)
 - [ ] 2. Same item, same `updatedAt`, different content: a rule that gives the same answer on every device (see decisions)
 - [x] 3. An item only the local side has is kept (`5443e023`, `e18751cb`)
-- [ ] 3b. The same item in both lists: merged with the rule of test 1 (and what happens when the local list has the same id twice)
+- [x] 3b. The same item in both lists: merged with the rule of test 1 (`2e007d7`, `ad44b5f`, `be62b52`, `c9fb51a`)
+- [x] 3c. The same id twice in the local list: only the later one is kept (`f267a2c`, `2eb8dc4`)
 - [x] 4. An item only the remote side has is added (`5e093cf`,`c5d29cc`)
 - [ ] 5. One side edited, the other deleted: the later one wins, and the user is told
 - [ ] 6. Deleted on both sides: stays deleted
