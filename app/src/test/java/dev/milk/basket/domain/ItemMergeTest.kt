@@ -44,4 +44,12 @@ class ItemMergeTest {
 
         assertEquals(listOf(remoteMilk), result)
     }
+
+    @Test
+    fun `two local items with the same id are merged into one`() {
+        val older = ShoppingItem("milk", "milk", false, false, 1_000)
+        val newer = older.copy(name = "milk 2L", updatedAt = 2_000)
+        val result = mergeList(local = listOf(older, newer), remote = emptyList())
+        assertEquals(listOf(newer), result)
+    }
 }
