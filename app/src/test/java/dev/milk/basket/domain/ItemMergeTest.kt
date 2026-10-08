@@ -26,4 +26,12 @@ class ItemMergeTest {
         val result = mergeList(local = listOf(milk), remote = emptyList())
         assertEquals(listOf(milk), result)
     }
+
+    @Test
+    fun `the same item in both lists is merged by the rule of the later one`() {
+        val remoteMilk = ShoppingItem("milk", "milk", false, false, 1_000)
+        val localMilk = remoteMilk.copy(name = "milk 2L", updatedAt = 2_000)
+        val result = mergeList(local = listOf(localMilk), remote = listOf(remoteMilk))
+        assertEquals(listOf(localMilk), result)
+    }
 }
