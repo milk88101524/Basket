@@ -1,6 +1,7 @@
 package dev.milk.basket.domain
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ItemMergeTest {
@@ -126,5 +127,14 @@ class ItemMergeTest {
         for (a in items) {
             assertEquals(a, merge(a, a))
         }
+    }
+
+    @Test
+    fun `when both are deleted the result stays deleted whichever is later`() {
+        val earlier = ShoppingItem("milk", "milk", false, true, 1_000)
+        val later = earlier.copy(name = "milk 2L", updatedAt = 2_000)
+
+        assertTrue(merge(earlier, later).deleted)
+        assertTrue(merge(later, earlier).deleted)
     }
 }
