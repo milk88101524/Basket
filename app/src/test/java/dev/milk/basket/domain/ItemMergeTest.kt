@@ -52,4 +52,13 @@ class ItemMergeTest {
         val result = mergeList(local = listOf(older, newer), remote = emptyList())
         assertEquals(listOf(newer), result)
     }
+
+    @Test
+    fun `when updatedAt is equal the item that is not deleted is kept`() {
+        val kept = ShoppingItem("milk", "milk", false, false, 1_000)
+        val gone = kept.copy(deleted = true)
+
+        assertEquals(kept, merge(kept, gone))
+        assertEquals(kept, merge(gone, kept))
+    }
 }
