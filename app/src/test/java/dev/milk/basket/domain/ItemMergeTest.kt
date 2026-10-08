@@ -88,4 +88,13 @@ class ItemMergeTest {
         assertEquals(deletedNotChecked, merge(deletedNotChecked, deletedChecked))
         assertEquals(deletedNotChecked, merge(deletedChecked, deletedNotChecked))
     }
+
+    @Test
+    fun `when updatedAt is equal and only the name differs the one that sorts first is kept`() {
+        val apple = ShoppingItem("milk", "apple", false, false, 1_000)
+        val milk = apple.copy(name = "milk")
+
+        assertEquals(apple, merge(apple, milk))
+        assertEquals(apple, merge(milk, apple))
+    }
 }
