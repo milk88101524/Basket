@@ -85,7 +85,7 @@ class ItemMergeTest {
         val deletedNotChecked = ShoppingItem("milk", "milk", false, true, 1_000)
         val deletedChecked = deletedNotChecked.copy(checked = true)
 
-        assertEquals(deletedChecked, merge(deletedNotChecked, deletedChecked))
-        assertEquals(deletedChecked, merge(deletedChecked, deletedNotChecked))
+        assertEquals(deletedNotChecked, merge(deletedNotChecked, deletedChecked))
+        assertEquals(deletedNotChecked, merge(deletedChecked, deletedNotChecked))
     }
 }
