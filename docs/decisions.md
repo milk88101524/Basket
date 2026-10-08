@@ -14,8 +14,11 @@ When two devices changed the same item while they could not see each other, the 
 
 A delete is not treated differently from an edit. A deleted item stays in the list as a tombstone (`deleted = true`) so the delete can be sent to the other devices and compared by time. When an edit beats a delete the item comes back with a notice. Given up: a delete can be undone by an edit made earlier on another device.
 
+## 2026-10-08 Same updatedAt: compare deleted, then checked, then name
+
+"The local copy wins" gives different answers on two devices, which then never agree, because each device calls its own copy the local one. The answer must not depend on which side is local. When `updatedAt` is equal, the fields are compared in this order and the first difference decides: `deleted = false` is kept, then `checked = false`, then the name that sorts first. Why: a wrongly kept item can be deleted again, a wrongly deleted one cannot come back; an item not yet bought is worse to forget than to buy twice. Given up: the name rule has no meaning, it only has to be the same everywhere.
+
 ## Open
 
-- Same `updatedAt`, different content: "the local copy wins" gives different answers on two devices, which then never agree. The rule has to be the same everywhere (test 2 and test 8 will show it).
 - One user on several devices, or a list shared by several people? Not decided; the merge is the same in both cases.
 - Order of the merged list: now the items of the local list come first, then the ones only the remote has. No test depends on it. Decide when a screen needs a fixed order, and pin it with a test then.

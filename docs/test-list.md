@@ -6,6 +6,10 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 
 - [x] 1. Same item on both sides: the one updated later wins (`3e1271d`, `8e6786a`)
 - [ ] 2. Same item, same `updatedAt`, different content: a rule that gives the same answer on every device (see decisions)
+  - [ ] 2a. Only `deleted` differs: the one that is not deleted is kept
+  - [ ] 2b. Only `checked` differs: the one that is not checked is kept
+  - [ ] 2c. `deleted` and `checked` point to different sides: `deleted` decides
+  - [ ] 2d. Only the name differs: the same one is kept whichever side is given first
 - [x] 3. An item only the local side has is kept (`5443e023`, `e18751cb`)
 - [x] 3b. The same item in both lists: merged with the rule of test 1 (`2e007d7`, `ad44b5f`, `be62b52`, `c9fb51a`)
 - [x] 3c. The same id twice in the local list: only the later one is kept (`f267a2c`, `2eb8dc4`)
