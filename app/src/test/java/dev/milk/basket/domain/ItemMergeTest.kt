@@ -113,4 +113,18 @@ class ItemMergeTest {
             }
         }
     }
+
+    @Test
+    fun `merging an item with itself gives the same item`() {
+        val items = listOf(
+            ShoppingItem("milk", "apple", false, false, 1_000),   // 基準
+            ShoppingItem("milk", "milk", false, false, 1_000),   // name 不同
+            ShoppingItem("milk", "apple", true, false, 1_000),   // checked 不同
+            ShoppingItem("milk", "apple", false, true, 1_000),   // deleted 不同
+        )
+
+        for (a in items) {
+            assertEquals(a, merge(a, a))
+        }
+    }
 }
