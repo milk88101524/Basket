@@ -19,4 +19,11 @@ class ItemMergeTest {
         val result = mergeList(local = emptyList(), remote = listOf(milk))
         assertEquals(listOf(milk), result)
     }
+
+    @Test
+    fun `an item only the local has is kept`() {
+        val milk = ShoppingItem("milk", "milk", false, false, 1_000)
+        val result = mergeList(local = listOf(milk), remote = emptyList())
+        assertEquals(listOf(milk), result)
+    }
 }
