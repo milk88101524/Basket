@@ -70,4 +70,13 @@ class ItemMergeTest {
         assertEquals(kept, merge(kept, ticked))
         assertEquals(kept, merge(ticked, kept))
     }
+
+    @Test
+    fun `when updatedAt is equal deleted decides before checked`() {
+        val notDeleted = ShoppingItem("milk", "milk", true, false, 1_000)
+        val deletedOnly = ShoppingItem("milk", "milk", false, true, 1_000)
+
+        assertEquals(notDeleted, merge(notDeleted, deletedOnly))
+        assertEquals(notDeleted, merge(deletedOnly, notDeleted))
+    }
 }
