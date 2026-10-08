@@ -7,3 +7,5 @@ fun merge(a: ShoppingItem, b: ShoppingItem): ShoppingItem {
         a // a >= b
     }
 }
+
+fun mergeList(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> = emptyList()
