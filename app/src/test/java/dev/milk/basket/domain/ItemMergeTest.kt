@@ -137,4 +137,15 @@ class ItemMergeTest {
         assertTrue(merge(earlier, later).deleted)
         assertTrue(merge(later, earlier).deleted)
     }
+
+    @Test
+    fun `the later edit wins as a whole so an earlier change to another field is lost`() {
+        val original = ShoppingItem("milk", "apple", false, false, 1_000)
+
+        val nameEdit = original.copy(name = "milk 2L", updatedAt = 1_500)
+        val checkedEdit = original.copy(checked = true, updatedAt = 2_000)
+
+        assertEquals(checkedEdit, merge(nameEdit, checkedEdit))
+        assertEquals(checkedEdit, merge(checkedEdit, nameEdit))
+    }
 }
