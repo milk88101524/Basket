@@ -13,5 +13,6 @@ fun mergeList(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<Shopp
 
 fun changedByRemote(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> {
     val merged = mergeList(local, remote)
-    return merged.filter { it !in local }
+    val localIds = local.map { it.id }
+    return merged.filter { it.id in localIds && it !in local }
 }
