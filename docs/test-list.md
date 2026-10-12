@@ -16,7 +16,7 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 - [x] 3c. The same id twice in the local list: only the later one is kept (`f267a2c`, `2eb8dc4`)
 - [x] 4. An item only the remote side has is added (`5e093cf`,`c5d29cc`)
 - [ ] 5. One side edited, the other deleted: the later one wins, and the user is told
-  - [ ] 5a. The later one wins, whichever side it is on (the rule is already there; this pins it)
+  - [x] 5a. The later one wins, whichever side it is on (the rule is already there; this pins it)
   - [ ] 5b. The user is told when an edit beats a delete (needs a design: what does the merge hand back?)
 - [x] 6. Deleted on both sides: stays deleted (`ce5346c`)
 - [x] 7. One side renamed, the other ticked the same item: the whole item is compared, so the earlier change is lost (documents the known limit of the rule) (`776438e`)
