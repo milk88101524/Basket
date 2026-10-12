@@ -148,4 +148,22 @@ class ItemMergeTest {
         assertEquals(checkedEdit, merge(nameEdit, checkedEdit))
         assertEquals(checkedEdit, merge(checkedEdit, nameEdit))
     }
+
+    @Test
+    fun `a later delete wins over an earlier edit`() {
+        val original = ShoppingItem("milk", "milk", false, false, 1_000)
+        val edited   = original.copy(name = "milk 2L", updatedAt = 2_000)
+        val deleted  = original.copy(deleted = true, updatedAt = 3_000)
+        assertEquals(deleted, merge(edited, deleted))
+        assertEquals(deleted, merge(deleted, edited))
+    }
+
+    @Test
+    fun `a later edit wins over an earlier delete`() {
+        val original = ShoppingItem("milk", "milk", false, false, 1_000)
+        val edited   = original.copy(name = "milk 2L", updatedAt = 2_000)
+        val deleted  = original.copy(deleted = true, updatedAt = 1_500)
+        assertEquals(edited, merge(edited, deleted))
+        assertEquals(edited, merge(deleted, edited))
+    }
 }
