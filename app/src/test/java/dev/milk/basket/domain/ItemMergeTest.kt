@@ -190,7 +190,7 @@ class ItemMergeTest {
     }
 
     @Test
-    fun `an item is deleted on remote`() {
+    fun `an item deleted on the remote side is reported`() {
         val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
         val tea = ShoppingItem(id = "tea", name = "tea", checked = false, deleted = false, updatedAt = 1_000)
         val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
@@ -198,5 +198,16 @@ class ItemMergeTest {
         val local = listOf(milk, tea, egg)
         val remote = listOf(milk, tea, eggDeleted)
         assertEquals(listOf(eggDeleted), changedByRemote(local, remote))
+    }
+
+    @Test
+    fun `an item the local side wins is not reported`() {
+        val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+        val tea = ShoppingItem(id = "tea", name = "tea", checked = false, deleted = false, updatedAt = 1_000)
+        val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+        val eggDeleted = egg.copy(deleted = true, updatedAt = 2_000)
+        val local = listOf(milk, tea, eggDeleted)
+        val remote = listOf(milk, tea, egg)
+        assertEquals(emptyList<ShoppingItem>(), changedByRemote(local, remote))
     }
 }
