@@ -18,6 +18,11 @@ A delete is not treated differently from an edit. A deleted item stays in the li
 
 "The local copy wins" gives different answers on two devices, which then never agree, because each device calls its own copy the local one. The answer must not depend on which side is local. When `updatedAt` is equal, the fields are compared in this order and the first difference decides: `deleted = false` is kept, then `checked = false`, then the name that sorts first. Why: a wrongly kept item can be deleted again, a wrongly deleted one cannot come back; an item not yet bought is worse to forget than to buy twice. Given up: the name rule has no meaning, it only has to be the same everywhere.
 
+## 2026-10-12 通知: 用 changedByRemote, 不放進 merge
+(1) 決定了什麼: 合併後,如果某個項目跟這台裝置原本的不一樣(被其他裝置的版本取代),就通知這台的使用者。用 changedByRemote(local, remote) 找出這些項目
+(2) 為什麼: merge 是對稱的,看不出哪邊是 local;通知需要知道哪邊是 local,所以放在收兩份清單的函式裡
+(3) 放棄了什麼: 只知道這項被別的裝置改了,不知道使用者自己是否也改過、自己的編輯被覆蓋了什麼。要做到要加欄位
+
 ## Open
 
 - One user on several devices, or a list shared by several people? Not decided; the merge is the same in both cases.
