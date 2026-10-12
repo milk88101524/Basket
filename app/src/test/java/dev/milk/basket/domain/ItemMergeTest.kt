@@ -166,4 +166,16 @@ class ItemMergeTest {
         assertEquals(edited, merge(edited, deleted))
         assertEquals(edited, merge(deleted, edited))
     }
+
+    @Test
+    fun `an item replaced by a newer remote copy is reported`() {
+        val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+        val tea = ShoppingItem(id = "tea", name = "tea", checked = false, deleted = false, updatedAt = 1_000)
+        val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+        val milk2l = milk.copy(name = "milk_2L", updatedAt = 2_000)
+        val local =listOf(milk, tea, egg)
+        val remote =listOf(tea, egg, milk2l)
+
+        assertEquals(listOf(milk2l), changedByRemote(local, remote))
+    }
 }
