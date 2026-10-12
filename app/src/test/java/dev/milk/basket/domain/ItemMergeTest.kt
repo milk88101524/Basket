@@ -178,4 +178,14 @@ class ItemMergeTest {
 
         assertEquals(listOf(milk2l), changedByRemote(local, remote))
     }
+
+    @Test
+    fun `an item only the remote side has is not reported`() {
+        val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+        val tea = ShoppingItem(id = "tea", name = "tea", checked = false, deleted = false, updatedAt = 1_000)
+        val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+        val local = emptyList<ShoppingItem>()
+        val remote = listOf(milk, tea, egg)
+        assertEquals(emptyList<ShoppingItem>(), changedByRemote(local, remote))
+    }
 }
