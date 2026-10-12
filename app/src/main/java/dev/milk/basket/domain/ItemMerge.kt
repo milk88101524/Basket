@@ -11,4 +11,7 @@ fun merge(a: ShoppingItem, b: ShoppingItem): ShoppingItem = when {
 
 fun mergeList(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> = (local + remote).groupBy { it.id }.values.map { it.reduce(::merge) }
 
-fun changedByRemote(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> = emptyList()
+fun changedByRemote(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> {
+    val merged = mergeList(local, remote)
+    return merged.filter { it !in local }
+}
