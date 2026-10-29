@@ -32,7 +32,7 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 
 `toUpload(local, remote)` returns the merged items that differ from the remote copy: those are the ones the remote has to be told about. It is the mirror of `changedByRemote` (merged ≠ local, so the user is told). Sync (the remote is newer, the local copy is replaced) is not upload.
 
-- [ ] 1. An item only the local side has is uploaded (added while offline)
+- [x] 1. An item only the local side has is uploaded (added while offline) (`1e9b0f5`, `b6c42a2`)
 - [ ] 2. The same item on both sides, identical: not uploaded (the remote is already up to date; a write costs money and wakes the other devices)
 - [ ] 3. Both sides have the item and the remote is newer: not uploaded (that is sync)
 - [ ] 4. Both sides have the item and the local copy is newer: uploaded
