@@ -28,9 +28,20 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 - [x] 7. One side renamed, the other ticked the same item: the whole item is compared, so the earlier change is lost (documents the known limit of the rule) (`776438e`)
 - [x] 8. `merge(a, b) == merge(b, a)` and `merge(a, a) == a` (`f23b25b`, `b07ce79`). The sample items all have the same `updatedAt`, so only the tie rule is covered; add other `updatedAt` values later
 
+## Upload: which items go to the remote
+
+`toUpload(local, remote)` returns the merged items that differ from the remote copy: those are the ones the remote has to be told about. It is the mirror of `changedByRemote` (merged ≠ local, so the user is told). Sync (the remote is newer, the local copy is replaced) is not upload.
+
+- [ ] 1. An item only the local side has is uploaded (added while offline)
+- [ ] 2. The same item on both sides, identical: not uploaded (the remote is already up to date; a write costs money and wakes the other devices)
+- [ ] 3. Both sides have the item and the remote is newer: not uploaded (that is sync)
+- [ ] 4. Both sides have the item and the local copy is newer: uploaded
+- [ ] 5. An item only the remote side has: not uploaded
+- [ ] 6. Several items in the list, only some of them need uploading: only those are returned
+- [ ] 7. The local copy is deleted (a tombstone) and newer than the remote copy: uploaded (a delete is treated like an edit)
+
 ## Later (not the merge)
 
-- [ ] Upload: an item where the local copy wins (merged ≠ remote) has to be sent to the remote
 - [ ] Repository: read from Room first, queue writes made offline, send them when online (with fakes for local and remote)
 - [ ] Room DAO and migrations (in-memory database)
 - [ ] ViewModel state
