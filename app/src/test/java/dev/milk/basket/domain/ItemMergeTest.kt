@@ -234,4 +234,10 @@ class ItemMergeTest {
         val milk = ShoppingItem("milk", "milk", false, false, 1_000)
         assertEquals(listOf(milk), toUpload(local = listOf(milk), emptyList()))
     }
+
+    @Test
+    fun `an item identical on both sides is not uploaded`() {
+        val milk = ShoppingItem("milk", "milk", false, false, 1_000)
+        assertEquals(emptyList<ShoppingItem>(), toUpload(local = listOf(milk), remote = listOf(milk)))
+    }
 }
