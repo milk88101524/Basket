@@ -260,4 +260,14 @@ class ItemMergeTest {
         val remote = ShoppingItem("milk", "milk", false, false, 2_000)
         assertEquals(emptyList<ShoppingItem>(), toUpload(emptyList(), listOf(remote)))
     }
+
+    @Test
+    fun `several items in the list, only some of them need uploading`() {
+        val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+        val tea = ShoppingItem(id = "tea", name = "tea", checked = false, deleted = false, updatedAt = 1_000)
+        val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+        val local = listOf(milk, tea, egg)
+        val remote = listOf(milk)
+        assertEquals(listOf(tea, egg).toSet(), toUpload(local, remote).toSet())
+    }
 }
