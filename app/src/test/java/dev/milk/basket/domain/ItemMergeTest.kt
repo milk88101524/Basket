@@ -270,4 +270,11 @@ class ItemMergeTest {
         val remote = listOf(milk)
         assertEquals(listOf(tea, egg).toSet(), toUpload(local, remote).toSet())
     }
+
+    @Test
+    fun `the local copy is deleted (a tombstone) and newer than the remote copy`() {
+        val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+        val milkDeleted = milk.copy(deleted = true, updatedAt = 2_000)
+        assertEquals(listOf(milkDeleted), toUpload(local = listOf(milkDeleted), remote = listOf(milk)))
+    }
 }
