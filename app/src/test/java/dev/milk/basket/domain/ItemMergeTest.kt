@@ -247,4 +247,11 @@ class ItemMergeTest {
         val remote = ShoppingItem("milk", "milk", false, false, 2_000)
         assertEquals(emptyList<ShoppingItem>(), toUpload(listOf(local), listOf(remote)))
     }
+
+    @Test
+    fun `both sides have the item and the local copy is newer`() {
+        val local = ShoppingItem("milk", "milk", false, false, 3_000)
+        val remote = ShoppingItem("milk", "milk", false, false, 2_000)
+        assertEquals(listOf(local), toUpload(listOf(local), listOf(remote)))
+    }
 }
