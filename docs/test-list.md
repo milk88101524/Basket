@@ -36,7 +36,7 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 - [x] 2. The same item on both sides, identical: not uploaded (the remote is already up to date; a write costs money and wakes the other devices) (`53d559e`, `f9802b6`)
 - [x] 3. Both sides have the item and the remote is newer: not uploaded (that is sync) (`fe1874c`; green from the start, shown to be able to fail by a mutation that compares the local list with the remote)
 - [x] 4. Both sides have the item and the local copy is newer: uploaded (`6394c67`; green from the start, shown to be able to fail by comparing ids only)
-- [ ] 5. An item only the remote side has: not uploaded
+- [x] 5. An item only the remote side has: not uploaded (`c0e536c`; green from the start, shown to be able to fail by also uploading ids the local list does not have)
 - [ ] 6. Several items in the list, only some of them need uploading: only those are returned
 - [ ] 7. The local copy is deleted (a tombstone) and newer than the remote copy: uploaded (a delete is treated like an edit)
 
