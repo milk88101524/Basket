@@ -19,5 +19,6 @@ fun changedByRemote(local: List<ShoppingItem>, remote: List<ShoppingItem>): List
 }
 
 fun toUpload(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> {
-    return mergeList(local, remote)
+    val merged = mergeList(local, remote)
+    return merged.filter { it !in remote }
 }
