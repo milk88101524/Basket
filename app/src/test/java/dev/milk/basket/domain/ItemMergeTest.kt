@@ -254,4 +254,10 @@ class ItemMergeTest {
         val remote = ShoppingItem("milk", "milk", false, false, 2_000)
         assertEquals(listOf(local), toUpload(listOf(local), listOf(remote)))
     }
+
+    @Test
+    fun `an item only the remote side has`() {
+        val remote = ShoppingItem("milk", "milk", false, false, 2_000)
+        assertEquals(emptyList<ShoppingItem>(), toUpload(emptyList(), listOf(remote)))
+    }
 }
