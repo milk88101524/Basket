@@ -38,7 +38,7 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 - [x] 4. Both sides have the item and the local copy is newer: uploaded (`6394c67`; green from the start, shown to be able to fail by comparing ids only)
 - [x] 5. An item only the remote side has: not uploaded (`c0e536c`; green from the start, shown to be able to fail by also uploading ids the local list does not have)
 - [x] 6. Several items in the list, only some of them need uploading: only those are returned (`3cb3ea8`; green from the start, shown to be able to fail by returning only the first item. The order of the result is not a rule, so the test compares sets)
-- [ ] 7. The local copy is deleted (a tombstone) and newer than the remote copy: uploaded (a delete is treated like an edit)
+- [x] 7. The local copy is deleted (a tombstone) and newer than the remote copy: uploaded (a delete is treated like an edit) (`19301db`; green once the local and remote sides were the right way round, shown to be able to fail by skipping deleted items)
 
 ## Later (not the merge)
 
