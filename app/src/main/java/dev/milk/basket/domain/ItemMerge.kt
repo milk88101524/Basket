@@ -19,5 +19,5 @@ fun changedByRemote(local: List<ShoppingItem>, remote: List<ShoppingItem>): List
 }
 
 fun toUpload(local: List<ShoppingItem>, remote: List<ShoppingItem>): List<ShoppingItem> {
-    return emptyList()
+    return mergeList(local, remote)
 }
