@@ -30,6 +30,10 @@ class ShoppingRepository(
 
         // toUpload
         val upload = toUpload(localItems, remoteItems)
+
+        if (upload != emptyList<ShoppingItem>()) {
+            remote.write(upload)
+        }
         return changed
     }
 }
