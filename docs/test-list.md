@@ -44,8 +44,8 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 
 Sync reads the local and the remote list, works out `toUpload` and `changedByRemote` from those two copies, then saves the merged list locally, uploads, and hands back the items to tell the user about. The notification list is worked out before the local save: after the save the local list equals the merged one and nothing would differ. There is no separate queue of offline writes: what still has to be uploaded is whatever differs from the remote, so a failed upload is found again by the next `toUpload`. Tested with a fake local store and a fake remote store.
 
-- [ ] 1. The remote has a newer `milk 2L` and a new `egg`, the local has the older `milk`: the local list becomes `milk 2L` and `egg`, nothing is uploaded, and `milk 2L` is reported as changed (`egg` is new, not reported)
-  - [ ] 1b. The local list has a `bread` added offline, the remote has `milk` only: the remote is sent `bread` in one `write`, the local list keeps `milk` and `bread`, nothing is reported (found because test 1 left `toUpload` unused in `sync()`)
+- [x] 1. The remote has a newer `milk 2L` and a new `egg`, the local has the older `milk`: the local list becomes `milk 2L` and `egg`, nothing is uploaded, and `milk 2L` is reported as changed (`egg` is new, not reported) (`48db04a`, `5b1b1c6`; the "nothing is uploaded" check was green from the start, shown to be able to fail by always calling `write`, which records `[[]]`)
+  - [x] 1b. The local list has a `bread` added offline, the remote has `milk` only: the remote is sent `bread` in one `write`, the local list keeps `milk` and `bread`, nothing is reported (found because test 1 left `toUpload` unused in `sync()`) (`27aa9d4`, `87691fb`)
 - [ ] 2. The upload fails (offline): the merged list is still saved locally, and the failure does not crash the sync
 
 ## Later (not the merge)
