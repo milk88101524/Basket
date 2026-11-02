@@ -15,6 +15,21 @@ class ShoppingRepository(
     private val remote: RemoteDataSource,
 ) {
     suspend fun sync(): List<ShoppingItem> {
-        return emptyList()
+        // get local & remote data
+        val localItems = local.read()
+        val remoteItems = remote.read()
+
+        // mergeList
+        val merged = mergeList(localItems, remoteItems)
+
+        // save local data
+        local.save(merged)
+
+        // changedByRemote
+        val changed = changedByRemote(localItems, remoteItems)
+
+        // toUpload
+        val upload = toUpload(localItems, remoteItems)
+        return changed
     }
 }
