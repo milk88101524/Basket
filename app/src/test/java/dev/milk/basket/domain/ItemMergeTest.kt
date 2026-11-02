@@ -249,7 +249,7 @@ class ItemMergeTest {
     }
 
     @Test
-    fun `both sides have the item and the local copy is newer`() {
+    fun `both sides have the item and the local copy is newer, the local copy is uploaded`() {
         val local = ShoppingItem("milk", "milk", false, false, 3_000)
         val remote = ShoppingItem("milk", "milk", false, false, 2_000)
         assertEquals(listOf(local), toUpload(listOf(local), listOf(remote)))

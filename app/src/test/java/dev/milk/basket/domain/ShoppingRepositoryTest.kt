@@ -26,9 +26,8 @@ class FakeRemoteDataSource(
     override suspend fun write(items: List<ShoppingItem>) {
         if (failOnWrite) {
             throw IOException("offline")
-        } else {
-            receipts.add(items)
         }
+        receipts.add(items)
     }
 }
 
@@ -50,7 +49,7 @@ class ShoppingRepositoryTest {
             val changed = repo.sync()
 
             assertEquals(setOf(milkNew, egg), fakeLocal.items.toSet())
-            assertEquals(emptyList<ShoppingItem>(), fakeRemote.receipts)
+            assertEquals(emptyList<List<ShoppingItem>>(), fakeRemote.receipts)
             assertEquals(listOf(milkNew), changed)
         }
     }
@@ -77,7 +76,7 @@ class ShoppingRepositoryTest {
     }
 
     @Test
-    fun `add the repository sync test for a failed upload`() {
+    fun `upload fails, the merged list is still saved locally and the exception reaches the caller`() {
         runTest {
             val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
             val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
@@ -87,7 +86,7 @@ class ShoppingRepositoryTest {
             val remote = listOf(milkNew)
 
             val fakeLocal = FakeLocalDataSource(local)
-            val fakeRemote = FakeRemoteDataSource(remote, true)
+            val fakeRemote = FakeRemoteDataSource(remote, failOnWrite = true)
 
             val repo = ShoppingRepository(fakeLocal, fakeRemote)
             val result = runCatching { repo.sync() }
@@ -108,7 +107,7 @@ class ShoppingRepositoryTest {
             val remote = listOf(milkNew)
 
             val fakeLocal = FakeLocalDataSource(local)
-            val fakeRemote = FakeRemoteDataSource(remote, true)
+            val fakeRemote = FakeRemoteDataSource(remote, failOnWrite = true)
 
             val repo = ShoppingRepository(fakeLocal, fakeRemote)
             val result = runCatching { repo.sync() }

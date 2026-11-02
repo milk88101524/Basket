@@ -33,7 +33,7 @@ class ShoppingRepository(
         // toUpload
         val upload = toUpload(localItems, remoteItems)
 
-        if (upload != emptyList<ShoppingItem>()) {
+        if (upload.isNotEmpty()) {
             try {
                 remote.write(upload)
             } catch (e: IOException) {
