@@ -93,7 +93,7 @@ class ShoppingRepositoryTest {
             val result = runCatching { repo.sync() }
 
             assertEquals(listOf(milkNew, bread), fakeLocal.items)
-            assertTrue(result.exceptionOrNull() is IOException)
+            assertTrue(result.exceptionOrNull()?.cause is IOException)
         }
     }
 

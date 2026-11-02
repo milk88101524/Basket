@@ -1,5 +1,7 @@
 package dev.milk.basket.domain
 
+import java.io.IOException
+
 interface LocalDataSource {
     suspend fun read(): List<ShoppingItem>
     suspend fun save(items: List<ShoppingItem>)
@@ -32,7 +34,11 @@ class ShoppingRepository(
         val upload = toUpload(localItems, remoteItems)
 
         if (upload != emptyList<ShoppingItem>()) {
-            remote.write(upload)
+            try {
+                remote.write(upload)
+            } catch (e: IOException) {
+                throw UploadFailed(changed = changed, cause = e)
+            }
         }
         return changed
     }
