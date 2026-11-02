@@ -40,8 +40,14 @@ The behaviours the merge has to have, written before the code. One at a time: pi
 - [x] 6. Several items in the list, only some of them need uploading: only those are returned (`3cb3ea8`; green from the start, shown to be able to fail by returning only the first item. The order of the result is not a rule, so the test compares sets)
 - [x] 7. The local copy is deleted (a tombstone) and newer than the remote copy: uploaded (a delete is treated like an edit) (`19301db`; green once the local and remote sides were the right way round, shown to be able to fail by skipping deleted items)
 
+## Repository: sync
+
+Sync reads the local and the remote list, works out `toUpload` and `changedByRemote` from those two copies, then saves the merged list locally, uploads, and hands back the items to tell the user about. The notification list is worked out before the local save: after the save the local list equals the merged one and nothing would differ. There is no separate queue of offline writes: what still has to be uploaded is whatever differs from the remote, so a failed upload is found again by the next `toUpload`. Tested with a fake local store and a fake remote store.
+
+- [ ] 1. The remote has a newer `milk 2L` and a new `egg`, the local has the older `milk`: the local list becomes `milk 2L` and `egg`, nothing is uploaded, and `milk 2L` is reported as changed (`egg` is new, not reported)
+- [ ] 2. The upload fails (offline): the merged list is still saved locally, and the failure does not crash the sync
+
 ## Later (not the merge)
 
-- [ ] Repository: read from Room first, queue writes made offline, send them when online (with fakes for local and remote)
 - [ ] Room DAO and migrations (in-memory database)
 - [ ] ViewModel state
