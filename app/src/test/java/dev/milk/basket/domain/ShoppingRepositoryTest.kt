@@ -2,7 +2,9 @@ package dev.milk.basket.domain
 
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.IOException
 
 class FakeLocalDataSource(var items: List<ShoppingItem>): LocalDataSource {
     override suspend fun read(): List<ShoppingItem> = items
@@ -12,13 +14,20 @@ class FakeLocalDataSource(var items: List<ShoppingItem>): LocalDataSource {
     }
 }
 
-class FakeRemoteDataSource(var items: List<ShoppingItem>): RemoteDataSource {
+class FakeRemoteDataSource(
+    var items: List<ShoppingItem>,
+    val failOnWrite: Boolean = false,
+): RemoteDataSource {
     val receipts = mutableListOf<List<ShoppingItem>>()
 
     override suspend fun read(): List<ShoppingItem> = items
 
     override suspend fun write(items: List<ShoppingItem>) {
-        receipts.add(items)
+        if (failOnWrite) {
+            throw IOException("offline")
+        } else {
+            receipts.add(items)
+        }
     }
 }
 
@@ -63,6 +72,27 @@ class ShoppingRepositoryTest {
             assertEquals(listOf(milk, bread), fakeLocal.items)
             assertEquals(listOf(listOf(bread)), fakeRemote.receipts)
             assertEquals(emptyList<ShoppingItem>(), changed)
+        }
+    }
+
+    @Test
+    fun `add the repository sync test for a failed upload`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
+            val bread = ShoppingItem(id = "bread", name = "bread", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk, bread)
+            val remote = listOf(milkNew)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote, true)
+
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+            val result = runCatching { repo.sync() }
+
+            assertEquals(listOf(milkNew, bread), fakeLocal.items)
+            assertTrue(result.exceptionOrNull() is IOException)
         }
     }
 }
