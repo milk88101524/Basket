@@ -4,7 +4,7 @@ Written when the decision is made: what was decided, why, and what was given up.
 
 ## 2026-10-08 Room is the source of truth, Firestore is only the remote
 
-The UI reads only from Room. Firestore's own offline cache is not used, so the sync, the queue of offline writes and the conflict rules are written in this project. Given up: less code.
+The UI reads only from Room. Firestore's own offline cache is not used, so the sync, the queue of offline writes and the conflict rules are written in this project. Given up: less code. (The queue of offline writes was dropped on 2026-11-02, see below.)
 
 ## 2026-10-08 Conflicts: the whole item is compared, the one updated later wins
 
@@ -22,6 +22,14 @@ A delete is not treated differently from an edit. A deleted item stays in the li
 (1) 決定了什麼: 合併後,如果某個項目跟這台裝置原本的不一樣(被其他裝置的版本取代),就通知這台的使用者。用 changedByRemote(local, remote) 找出這些項目
 (2) 為什麼: merge 是對稱的,看不出哪邊是 local;通知需要知道哪邊是 local,所以放在收兩份清單的函式裡
 (3) 放棄了什麼: 只知道這項被別的裝置改了,不知道使用者自己是否也改過、自己的編輯被覆蓋了什麼。要做到要加欄位
+
+## 2026-11-02 No separate queue of offline writes: what has to be uploaded is what differs from the remote
+
+Writes made offline are only saved in Room. At every sync `toUpload(local, remote)` finds the items that differ from the remote, so an upload that failed is found again by the next sync. Why: a queue is a second copy of the same information and has to be kept in step with Room. It works for edits and deletes because a delete stays in the list as a tombstone. Given up: knowing which write failed or how often it was tried, and the order the writes were made in.
+
+## 2026-11-02 A failed upload: the local list stays saved, the exception goes up and carries the items to report
+
+`sync()` saves the merged list locally first, then uploads. If the upload fails the local list stays as it is (the screen reads Room and must show the newest list), and `sync()` throws `UploadFailed`, with the original error as its cause and the items to tell the user about in `changed`. Why: swallowing the error hides it from the caller (WorkManager must know the sync failed to retry it); without `changed`, the next sync finds nothing to report because the local list is already new. Given up: telling the user before the upload; to be decided again when the ViewModel exists.
 
 ## Open
 
