@@ -37,3 +37,8 @@ class ShoppingRepository(
         return changed
     }
 }
+
+class UploadFailed(
+    val changed: List<ShoppingItem>,
+    cause: Throwable
+): Exception("upload failed", cause)
