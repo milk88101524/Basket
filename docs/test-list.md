@@ -49,6 +49,13 @@ Sync reads the local and the remote list, works out `toUpload` and `changedByRem
 - [x] 2. The upload fails (offline): the merged list is still saved locally, and the exception reaches the caller (WorkManager needs to know the sync failed to retry it; swallowing it would hide why) (`7fb2b42`; green from the start, shown to be able to fail by saving after the upload for the local check and by catching the exception for the other. The first run used a local list equal to the merged one, so the mutation stayed green: the data was changed so that saved and not saved differ)
   - [x] 2b. The upload fails while the remote also changed an item: the exception the caller gets (`UploadFailed`) carries the items to tell the user about (found while deciding 2: the local list is saved before the upload, so without this the next `changedByRemote` finds nothing and the notification is lost; telling the user before the upload is left for when the ViewModel exists) (`d56884c`, `4f27954`; the test of 2 now checks the `cause`, since the exception is wrapped)
 
+More cases of `sync()`, added 2026-11-03. Not listed on purpose: nothing differs on either side (`upload.isNotEmpty()` is already covered by test 1, it would be green from the start) and `write` throwing something other than `IOException` (it only pins what the code does today).
+
+- [ ] 3. The first upload fails, the next `sync()` with the same data succeeds: the remote receives `bread` then (proves that no queue of offline writes is needed, see decisions)
+- [ ] 4. The remote cannot be read (offline): the local list is left as it is, `write` is not called, the exception reaches the caller. To decide first: pass on the `IOException` as it is, or wrap it
+- [ ] 5. One `sync()` with both directions: the local list has a `bread` added offline and the remote has a newer `milk 2L`. `bread` is uploaded, `milk 2L` is reported, the local list keeps both
+- [ ] 6. The local list cannot be saved: is the merged list still uploaded? To decide first, then write the test
+
 ## Later (not the merge)
 
 - [ ] Room DAO and migrations (in-memory database)
