@@ -51,7 +51,7 @@ Sync reads the local and the remote list, works out `toUpload` and `changedByRem
 
 More cases of `sync()`, added 2026-11-03. Not listed on purpose: nothing differs on either side (`upload.isNotEmpty()` is already covered by test 1, it would be green from the start) and `write` throwing something other than `IOException` (it only pins what the code does today).
 
-- [ ] 3. The first upload fails, the next `sync()` with the same data succeeds: the remote receives `bread` then (proves that no queue of offline writes is needed, see decisions)
+- [x] 3. The first upload fails, the next `sync()` with the same data succeeds: the remote receives `bread` then (proves that no queue of offline writes is needed, see decisions) (`5d12597`; green from the start, shown to be able to fail by a mutation that stops uploading after the first failure: the receipts stay empty)
 - [ ] 4. The remote cannot be read (offline): the local list is left as it is, `write` is not called, the exception reaches the caller. To decide first: pass on the `IOException` as it is, or wrap it
 - [ ] 5. One `sync()` with both directions: the local list has a `bread` added offline and the remote has a newer `milk 2L`. `bread` is uploaded, `milk 2L` is reported, the local list keeps both
 - [ ] 6. The local list cannot be saved: is the merged list still uploaded? To decide first, then write the test
