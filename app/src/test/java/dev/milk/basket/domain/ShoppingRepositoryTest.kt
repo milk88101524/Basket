@@ -18,10 +18,17 @@ class FakeLocalDataSource(var items: List<ShoppingItem>): LocalDataSource {
 class FakeRemoteDataSource(
     var items: List<ShoppingItem>,
     var failOnWrite: Boolean = false,
+    var failOnRead: Boolean = false,
 ): RemoteDataSource {
     val receipts = mutableListOf<List<ShoppingItem>>()
 
-    override suspend fun read(): List<ShoppingItem> = items
+    override suspend fun read(): List<ShoppingItem> {
+        return if (failOnRead) {
+            throw IOException("offline")
+        } else {
+            items
+        }
+    }
 
     override suspend fun write(items: List<ShoppingItem>) {
         if (failOnWrite) {
@@ -162,6 +169,28 @@ class ShoppingRepositoryTest {
             assertEquals(listOf(milkNew), result)
             assertEquals(listOf(listOf(bread)), fakeRemote.receipts)
             assertEquals(listOf(milkNew, bread), fakeLocal.items)
+        }
+    }
+
+    @Test
+    fun `remote cannot be read, nothing is uploaded, the local list is left as it is and the IOException reaches the caller`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
+            val bread = ShoppingItem(id = "bread", name = "bread", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk, bread)
+            val remote = listOf(milkNew)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote, failOnRead = true)
+
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+            val result = runCatching { repo.sync() }
+
+            assertTrue(result.exceptionOrNull() is IOException)
+            assertEquals(emptyList<List<ShoppingItem>>(), fakeRemote.receipts)
+            assertEquals(listOf(milk, bread), fakeLocal.items)
         }
     }
 }
