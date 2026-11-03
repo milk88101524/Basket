@@ -17,7 +17,7 @@ class FakeLocalDataSource(var items: List<ShoppingItem>): LocalDataSource {
 
 class FakeRemoteDataSource(
     var items: List<ShoppingItem>,
-    val failOnWrite: Boolean = false,
+    var failOnWrite: Boolean = false,
 ): RemoteDataSource {
     val receipts = mutableListOf<List<ShoppingItem>>()
 
@@ -115,6 +115,31 @@ class ShoppingRepositoryTest {
 
             assertNotNull(error)
             assertEquals(listOf(milkNew), error?.changed)
+        }
+    }
+
+    @Test
+    fun `upload fails once, the next sync uploads the bread again`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
+            val bread = ShoppingItem(id = "bread", name = "bread", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk, bread)
+            val remote = listOf(milkNew)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote, failOnWrite = true)
+
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+            val result = runCatching { repo.sync() }
+            val error = result.exceptionOrNull() as? UploadFailed
+
+            assertNotNull(error)
+            fakeRemote.failOnWrite = false
+
+            repo.sync()
+            assertEquals(listOf(listOf(bread)), fakeRemote.receipts)
         }
     }
 }
