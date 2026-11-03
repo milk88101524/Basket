@@ -7,10 +7,16 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.IOException
 
-class FakeLocalDataSource(var items: List<ShoppingItem>): LocalDataSource {
+class FakeLocalDataSource(
+    var items: List<ShoppingItem>,
+    var failOnSave: Boolean = false
+): LocalDataSource {
     override suspend fun read(): List<ShoppingItem> = items
 
     override suspend fun save(items: List<ShoppingItem>) {
+        if (failOnSave) {
+            throw IllegalStateException("disk full")
+        }
         this.items = items
     }
 }
@@ -191,6 +197,27 @@ class ShoppingRepositoryTest {
             assertTrue(result.exceptionOrNull() is IOException)
             assertEquals(emptyList<List<ShoppingItem>>(), fakeRemote.receipts)
             assertEquals(listOf(milk, bread), fakeLocal.items)
+        }
+    }
+
+    @Test
+    fun `local list cannot be saved, nothing is uploaded and the exception reaches the caller`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
+            val bread = ShoppingItem(id = "bread", name = "bread", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk, bread)
+            val remote = listOf(milkNew)
+
+            val fakeLocal = FakeLocalDataSource(local, failOnSave = true)
+            val fakeRemote = FakeRemoteDataSource(remote)
+
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+            val result = runCatching { repo.sync() }
+
+            assertTrue(result.exceptionOrNull() is IllegalStateException)
+            assertEquals(emptyList<List<ShoppingItem>>(), fakeRemote.receipts)
         }
     }
 }
