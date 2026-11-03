@@ -35,6 +35,10 @@ Writes made offline are only saved in Room. At every sync `toUpload(local, remot
 
 If `remote.read()` fails, `sync()` stops there: nothing is merged, nothing is saved, nothing is uploaded, and the `IOException` reaches the caller unchanged. Why: the local list has not changed, so there is nothing to report and nothing to lose; `UploadFailed` exists only to carry `changed`, and here there is nothing to carry. Given up: the caller cannot tell a failed read from a failed upload by the type alone (`UploadFailed` means the local list was already saved). Decide again if the ViewModel needs to tell them apart.
 
+## 2026-11-03 The local list cannot be saved: the sync stops, nothing is uploaded
+
+If `local.save` fails, the exception goes up as it is and the merged list is not uploaded. Why: it can only be a problem of the local database (with no network, `remote.read()` fails first); the local list is unchanged, so the next `sync()` works out the same `changedByRemote` and `toUpload` again and nothing is lost; uploading would not repair the local database and needs more code. Given up: the other devices get the local changes only after the local database works again.
+
 ## Open
 
 - One user on several devices, or a list shared by several people? Not decided; the merge is the same in both cases.
