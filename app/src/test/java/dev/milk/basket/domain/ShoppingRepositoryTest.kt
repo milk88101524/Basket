@@ -142,4 +142,26 @@ class ShoppingRepositoryTest {
             assertEquals(listOf(listOf(bread)), fakeRemote.receipts)
         }
     }
+
+    @Test
+    fun `local has a new bread and remote has a newer milk, bread is uploaded and milk is reported`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
+            val bread = ShoppingItem(id = "bread", name = "bread", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk, bread)
+            val remote = listOf(milkNew)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote)
+
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+            val result = repo.sync()
+
+            assertEquals(listOf(milkNew), result)
+            assertEquals(listOf(listOf(bread)), fakeRemote.receipts)
+            assertEquals(listOf(milkNew, bread), fakeLocal.items)
+        }
+    }
 }
