@@ -43,9 +43,7 @@ class ShoppingRepository(
         return changed
     }
 
-    suspend fun getItems(): List<ShoppingItem> {
-        return emptyList()
-    }
+    suspend fun getItems(): List<ShoppingItem> = local.read()
 }
 
 class UploadFailed(
