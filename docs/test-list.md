@@ -60,7 +60,7 @@ More cases of `sync()`, added 2026-11-03. Not listed on purpose: nothing differs
 
 The screen shows the local list first and syncs in the background (see decisions, 2026-11-05), so the Repository needs a read that touches only the local store. `sync()` cannot serve it: it returns `changed` (what to tell the user), not the merged list. Written down after the first test, not before; the list should come first from the next one on.
 
-- [ ] 1. The local list has `milk`, the remote has `egg`: `getItems()` returns `milk` only (the remote is ignored, and so is any merge of the two sides) (red `62784a5`, green `cb33f2c`; the mutation check that reads the remote and the one that merges both sides is still to do)
+- [x] 1. The local list has `milk`, the remote has `egg`: `getItems()` returns `milk` only (the remote is ignored, and so is any merge of the two sides) (red `62784a5`, green `cb33f2c`; shown to be able to fail by two mutations of the `getItems()` line: reading `remote.read()` instead gives `[egg]`, and `remote.read() + local.read()` gives `[egg, milk]`. That is why the remote holds an item the local list does not: with an empty remote the second mutation would have stayed green)
 
 ## ViewModel (next, planned before any test)
 
