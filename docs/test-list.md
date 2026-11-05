@@ -56,7 +56,22 @@ More cases of `sync()`, added 2026-11-03. Not listed on purpose: nothing differs
 - [x] 5. One `sync()` with both directions: the local list has a `bread` added offline and the remote has a newer `milk 2L`. `bread` is uploaded, `milk 2L` is reported, the local list keeps both (`232348c`; green from the start, shown to be able to fail by uploading the whole merged list instead of `toUpload`: the receipts then hold `milk 2L` as well)
 - [x] 6. The local list cannot be saved (a problem of the local database, not of the network: with no network `remote.read()` would have failed first): the sync stops, nothing is uploaded, the exception reaches the caller (`0e534d8`; green from the start, shown to be able to fail by swallowing the exception and by uploading inside the `catch` before rethrowing. A check that the local list is unchanged was dropped: the fake `save` throws before it changes anything, so no change in `sync()` could make that check fail)
 
+## Repository: getItems
+
+The screen shows the local list first and syncs in the background (see decisions, 2026-11-05), so the Repository needs a read that touches only the local store. `sync()` cannot serve it: it returns `changed` (what to tell the user), not the merged list. Written down after the first test, not before; the list should come first from the next one on.
+
+- [ ] 1. The local list has `milk`, the remote has `egg`: `getItems()` returns `milk` only (the remote is ignored, and so is any merge of the two sides) (red `62784a5`, green `cb33f2c`; the mutation check that reads the remote and the one that merges both sides is still to do)
+
+## ViewModel (next, planned before any test)
+
+Start with the data flow, then the details. The screen state is the list plus the sync state, because the list must show while a sync is running or has failed.
+
+- [ ] 1. On start the list is the local one and a sync is started in the background
+- [ ] 2. When the sync ends the list is read again and the sync state says it is done
+- [ ] 3. When the sync throws, the list stays the local one and the sync state says it failed, with the reason
+- [ ] Later: whether and when to tell the user before the upload (left open in decisions, 2026-11-02), a second sync request while one is running, retry after a failure
+- [ ] Later: replace the one-off read by a Flow of the local list (`LocalDataSource.observe()`), so every writer (sync and the user's own edits) refreshes the screen without a manual re-read
+
 ## Later (not the merge)
 
 - [ ] Room DAO and migrations (in-memory database)
-- [ ] ViewModel state

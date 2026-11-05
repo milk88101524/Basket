@@ -43,3 +43,8 @@ If `local.save` fails, the exception goes up as it is and the merged list is not
 
 - One user on several devices, or a list shared by several people? Not decided; the merge is the same in both cases.
 - Order of the merged list: now the items of the local list come first, then the ones only the remote has. No test depends on it. Decide when a screen needs a fixed order, and pin it with a test then.
+
+## 2026-11-05 Show the local list first and sync in the background; the Repository reads the local list with `getItems()`
+
+On start the screen shows what is in Room and a sync runs in the background; the list is read again when the sync ends. Why: the app is offline-first, so the list must show with no network and must not wait for one. `sync()` cannot be used for the read because it returns `changed`, not the merged list. The name stays `getItems()`, not `getLocalItems()`: that the screen reads only the local store is a rule of the app (see 2026-10-08), not something the caller should have to know, and the name would be wrong if the source changed. Given up: the name does not tell a reader that no network is used (this note does). Expected to change: when the Room DAO exists the read becomes a Flow of the local list, so that every writer (sync and the user's own edits) refreshes the screen without a manual re-read.
+
