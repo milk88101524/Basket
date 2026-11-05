@@ -42,6 +42,10 @@ class ShoppingRepository(
         }
         return changed
     }
+
+    suspend fun getItems(): List<ShoppingItem> {
+        return emptyList()
+    }
 }
 
 class UploadFailed(
