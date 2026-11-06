@@ -19,6 +19,7 @@ class ShoppingViewModel(
     fun add(event: ShoppingEvent) {
         when(event) {
             ShoppingEvent.Started -> loadData()
+            ShoppingEvent.NoticeDismissed -> {}
         }
     }
 
@@ -53,4 +54,5 @@ sealed interface SyncStatus {
 
 sealed interface ShoppingEvent {
     data object Started: ShoppingEvent
+    data object NoticeDismissed: ShoppingEvent
 }

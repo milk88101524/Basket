@@ -192,4 +192,31 @@ class ShoppingViewModelTest {
             assertEquals(emptyList<ShoppingItem>(), vm.state.value.items)
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `after NoticeDismissed the changed list is empty and the rest of the state stays`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
+            val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk, egg)
+            val remote = listOf(milkNew)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote)
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+
+            val vm = ShoppingViewModel(repo, backgroundScope)
+            vm.add(ShoppingEvent.Started)
+            runCurrent()
+            assertEquals(listOf(milkNew), vm.state.value.changed)
+            vm.add(ShoppingEvent.NoticeDismissed)
+            runCurrent()
+            assertEquals(emptyList<ShoppingItem>(), vm.state.value.changed)
+            assertEquals(listOf(milkNew, egg), vm.state.value.items)
+            assertTrue(vm.state.value.syncState is SyncStatus.Done)
+        }
+    }
 }
