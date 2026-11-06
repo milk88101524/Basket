@@ -31,8 +31,8 @@ class ShoppingViewModel(
                 val merged = repo.getItems()
                 _state.update { ShoppingState(items = merged, syncState = SyncStatus.Done, changed = changed) }
             } catch (e: Exception) {
-                val latest = repo.getItems()
-                _state.update { it.copy(items = latest, syncState = SyncStatus.Failed(e)) }
+                val latest = try { repo.getItems() } catch (_: Exception) { null }
+                _state.update { it.copy(items = latest ?: it.items, syncState = SyncStatus.Failed(e)) }
             }
         }
     }
