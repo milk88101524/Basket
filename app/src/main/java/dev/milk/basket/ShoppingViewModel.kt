@@ -26,7 +26,7 @@ class ShoppingViewModel(
         scope.launch {
             try {
                 val local = repo.getItems()
-                _state.update { ShoppingState(items = local) }
+                _state.update { ShoppingState(items = local, syncState = SyncStatus.Syncing) }
                 val changed = repo.sync()
                 val merged = repo.getItems()
                 _state.update { ShoppingState(items = merged, syncState = SyncStatus.Done, changed = changed) }
