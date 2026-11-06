@@ -16,6 +16,28 @@ class ShoppingViewModelTest {
     fun `on start the list is the local one`() {
         runTest {
             val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+//            val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk)
+            val remote = listOf(milk)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote)
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+
+            val vm = ShoppingViewModel(repo, backgroundScope)
+            vm.add(ShoppingEvent.Started)
+            runCurrent()
+
+            assertEquals(ShoppingState.Loaded(listOf(milk)), vm.state.value)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `started and sync`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
             val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
 
             val local = listOf(milk)
@@ -29,7 +51,7 @@ class ShoppingViewModelTest {
             vm.add(ShoppingEvent.Started)
             runCurrent()
 
-            assertEquals(ShoppingState.Loaded(listOf(milk)), vm.state.value)
+            assertEquals(ShoppingState.Loaded(listOf(milk, egg)), vm.state.value)
         }
     }
 }
