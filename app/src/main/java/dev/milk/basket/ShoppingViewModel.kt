@@ -25,9 +25,11 @@ class ShoppingViewModel(
     private fun loadData() {
         scope.launch {
             try {
-                _state.update { ShoppingState(repo.getItems()) }
-                repo.sync()
-                _state.update { ShoppingState(repo.getItems(), SyncStatus.Done) }
+                val local = repo.getItems()
+                _state.update { ShoppingState(items = local) }
+                val changed = repo.sync()
+                val merged = repo.getItems()
+                _state.update { ShoppingState(items = merged, syncState = SyncStatus.Done, changed = changed) }
             } catch (e: Exception) {
                 _state.update { it.copy(syncState = SyncStatus.Failed(e)) }
             }
