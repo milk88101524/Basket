@@ -62,14 +62,18 @@ The screen shows the local list first and syncs in the background (see decisions
 
 - [x] 1. The local list has `milk`, the remote has `egg`: `getItems()` returns `milk` only (the remote is ignored, and so is any merge of the two sides) (red `62784a5`, green `cb33f2c`; shown to be able to fail by two mutations of the `getItems()` line: reading `remote.read()` instead gives `[egg]`, and `remote.read() + local.read()` gives `[egg, milk]`. That is why the remote holds an item the local list does not: with an empty remote the second mutation would have stayed green)
 
-## ViewModel (next, planned before any test)
+## ViewModel
 
-Start with the data flow, then the details. The screen state is the list plus the sync state, because the list must show while a sync is running or has failed.
+`ShoppingViewModel(repo, scope)` is a plain Kotlin class in the BLoC shape: an event goes in with `add(event)`, the state comes out as `state`. The state is the list plus a sync status (`ShoppingState(items, syncState)`), because the list must show while a sync is running or has failed. Started with the data flow, then the details. The tests look only at the field they are about (`state.items` or `state.syncState`), so a change of the other field does not break them.
 
-- [ ] 1. On start the list is the local one and a sync is started in the background
-- [ ] 2. When the sync ends the list is read again and the sync state says it is done
-- [ ] 3. When the sync throws, the list stays the local one and the sync state says it failed, with the reason
-- [ ] Later: whether and when to tell the user before the upload (left open in decisions, 2026-11-02), a second sync request while one is running, retry after a failure
+- [x] 1a. After `Started` the list is the local one (red `0455082`, green `bfede5f`; the remote holds the same item, so the test does not depend on the sync)
+- [x] 1b. After `Started` the sync runs and the list is read again: local `milk`, remote `egg`, the list becomes `milk` and `egg` (red `9f578ca`, green `a42a96c`)
+  - The state first was `Initial / Loading / Loaded / Error`. It could not show the list and a failed sync together, so it became the list plus a sync status (`dfb1111`, `e4c9a09`, `945bf46` fixes the second test that `e4c9a09` left on `Loaded`). See decisions, 2026-11-06.
+- [x] 3. The sync fails (the remote cannot be read): the list stays the local one and the status is `Failed` (red `945bf46`, green `89b42b1`; red from the first run: the placeholder `catch` emptied the list. The first version of the test asserted `assertNotNull(syncState)`, which cannot fail because the type is not nullable, so it was replaced by an `is Failed` check)
+- [x] 2. The sync ends: the status is `Done` (red `c2d9a01`, green `3822384`)
+- [ ] 2b. The items the sync reports as changed (`sync()` returns them, the ViewModel throws them away today) reach the user. Where they go (a field of the state or a separate output) is still to be decided
+- [ ] `Syncing` while the sync runs: needs a test that can see the state in between
+- [ ] Later: whether and when to tell the user before the upload (left open in decisions, 2026-11-02), `Failed` after an `UploadFailed` also carrying its `changed`, a second sync request while one is running, retry after a failure
 - [ ] Later: replace the one-off read by a Flow of the local list (`LocalDataSource.observe()`), so every writer (sync and the user's own edits) refreshes the screen without a manual re-read
 
 ## Later (not the merge)

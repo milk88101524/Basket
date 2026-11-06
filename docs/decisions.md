@@ -48,3 +48,11 @@ If `local.save` fails, the exception goes up as it is and the merged list is not
 
 On start the screen shows what is in Room and a sync runs in the background; the list is read again when the sync ends. Why: the app is offline-first, so the list must show with no network and must not wait for one. `sync()` cannot be used for the read because it returns `changed`, not the merged list. The name stays `getItems()`, not `getLocalItems()`: that the screen reads only the local store is a rule of the app (see 2026-10-08), not something the caller should have to know, and the name would be wrong if the source changed. Given up: the name does not tell a reader that no network is used (this note does). Expected to change: when the Room DAO exists the read becomes a Flow of the local list, so that every writer (sync and the user's own edits) refreshes the screen without a manual re-read.
 
+## 2026-11-06 The ViewModel is a plain class with events in and a state out; the state is the list plus a sync status
+
+`ShoppingViewModel(repo, scope)` is a plain Kotlin class, not an `androidx.lifecycle.ViewModel`: the scope is passed in, so the tests pass the scope of `runTest` and need no `Dispatchers.setMain`, and the same class can be wrapped later (with `viewModelScope`) or tried in another framework. What goes in is an event (`ShoppingEvent`, only `Started` so far; an event says what happened, not what to do), what comes out is a state (`ShoppingState`).
+
+The state first was a sealed `Initial / Loading / Loaded / Error`. With the local list shown first and the sync in the background, the list and the sync are two things that change on their own: a failed sync must not hide the list. Putting the error inside `Loaded`, or the list inside `Error`, both put one thing in the other. So the state is `ShoppingState(items, syncState)` and `syncState` is the sealed `Idle / Syncing / Done / Failed(error)`. Given up: the screen can no longer match on one state to know the whole mode of the screen; `Syncing` is not used yet.
+
+The ViewModel is tested with the real `ShoppingRepository` and the fake data sources, not with an interface in between: the repository is already covered, and an interface with one implementation would be an abstraction nobody asked for. Given up: a broken repository shows up in the ViewModel tests too.
+
