@@ -23,9 +23,11 @@ class ShoppingViewModel(
 
     private fun loadData() {
         scope.launch {
-//        current = ShoppingState.Loading
             try {
-                val data = repo.getItems()
+                var data = repo.getItems()
+                _state.value = ShoppingState.Loaded(data)
+                repo.sync()
+                data = repo.getItems()
                 _state.value = ShoppingState.Loaded(data)
             } catch (e: Exception) {
                 _state.value = ShoppingState.Error(e)
@@ -37,7 +39,7 @@ class ShoppingViewModel(
 sealed interface ShoppingState {
     data object Initial: ShoppingState
     data object Loading: ShoppingState
-    data class Loaded(val item: List<ShoppingItem>): ShoppingState
+    data class Loaded(val items: List<ShoppingItem>): ShoppingState
     data class Error(val error: Exception): ShoppingState
 }
 
