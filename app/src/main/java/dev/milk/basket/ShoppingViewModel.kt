@@ -6,13 +6,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ShoppingViewModel(
     private val repo: ShoppingRepository,
     private val scope: CoroutineScope
 ) {
-    private val _state = MutableStateFlow<ShoppingState>(ShoppingState())
+    private val _state = MutableStateFlow(ShoppingState())
     val state: StateFlow<ShoppingState> = _state.asStateFlow()
 
     fun add(event: ShoppingEvent) {
@@ -24,11 +25,11 @@ class ShoppingViewModel(
     private fun loadData() {
         scope.launch {
             try {
-                _state.value = ShoppingState(repo.getItems())
+                _state.update { ShoppingState(repo.getItems()) }
                 repo.sync()
-                _state.value = ShoppingState(repo.getItems())
+                _state.update { ShoppingState(repo.getItems()) }
             } catch (e: Exception) {
-                _state.value = ShoppingState(emptyList(), SyncStatus.Failed(e))
+                _state.update { it.copy(syncState = SyncStatus.Failed(e)) }
             }
         }
     }
