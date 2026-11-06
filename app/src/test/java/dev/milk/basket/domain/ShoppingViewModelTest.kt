@@ -37,7 +37,7 @@ class ShoppingViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `started and sync`() {
+    fun `after Started the sync runs and the list shows the remote item too`() {
         runTest {
             val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
             val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
