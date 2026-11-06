@@ -38,6 +38,7 @@ class ShoppingViewModel(
 data class ShoppingState(
     val items: List<ShoppingItem> = emptyList(),
     val syncState: SyncStatus = SyncStatus.Idle,
+    val changed: List<ShoppingItem> = emptyList()
 )
 
 sealed interface SyncStatus {
