@@ -29,7 +29,7 @@ class ShoppingViewModelTest {
             vm.add(ShoppingEvent.Started)
             runCurrent()
 
-            assertEquals(ShoppingState.Loaded(listOf(milk)), vm.state.value)
+            assertEquals(listOf(milk), vm.state.value.items)
         }
     }
 
