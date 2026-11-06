@@ -79,4 +79,26 @@ class ShoppingViewModelTest {
             assertEquals(listOf(milk), vm.state.value.items)
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `sync done`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk)
+            val remote = listOf(egg)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote)
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+
+            val vm = ShoppingViewModel(repo, backgroundScope)
+            vm.add(ShoppingEvent.Started)
+            runCurrent()
+
+            assertEquals(SyncStatus.Done, vm.state.value.syncState)
+        }
+    }
 }
