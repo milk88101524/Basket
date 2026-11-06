@@ -19,7 +19,9 @@ class ShoppingViewModel(
     fun add(event: ShoppingEvent) {
         when(event) {
             ShoppingEvent.Started -> loadData()
-            ShoppingEvent.NoticeDismissed -> {}
+            ShoppingEvent.NoticeDismissed -> {
+                _state.update { it.copy(changed = emptyList()) }
+            }
         }
     }
 
