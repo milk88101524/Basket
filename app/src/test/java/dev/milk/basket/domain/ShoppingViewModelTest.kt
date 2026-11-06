@@ -1,5 +1,6 @@
 package dev.milk.basket.domain
 
+import dev.milk.basket.ShoppingEvent
 import dev.milk.basket.ShoppingState
 import dev.milk.basket.ShoppingViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +26,7 @@ class ShoppingViewModelTest {
             val repo = ShoppingRepository(fakeLocal, fakeRemote)
 
             val vm = ShoppingViewModel(repo, backgroundScope)
+            vm.add(ShoppingEvent.Started)
             runCurrent()
 
             assertEquals(ShoppingState.Loaded(listOf(milk)), vm.state.value)
