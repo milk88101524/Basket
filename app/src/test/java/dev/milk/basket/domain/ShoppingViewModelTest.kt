@@ -104,7 +104,7 @@ class ShoppingViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `sync changed`() {
+    fun `after Started the state's changed holds the items the remote changed`() {
         runTest {
             val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
             val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
