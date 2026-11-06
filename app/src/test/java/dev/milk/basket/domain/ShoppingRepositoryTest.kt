@@ -12,11 +12,16 @@ import kotlin.time.Duration.Companion.milliseconds
 class FakeLocalDataSource(
     var items: List<ShoppingItem>,
     var failOnSave: Boolean = false,
+    var failOnRead: Boolean = false,
     val readDelay: Long = 0
 ): LocalDataSource {
     override suspend fun read(): List<ShoppingItem> {
         delay(readDelay.milliseconds)
-        return items
+        return if (failOnRead) {
+            throw IllegalStateException("disk fail")
+        } else {
+            items
+        }
     }
 
     override suspend fun save(items: List<ShoppingItem>) {
