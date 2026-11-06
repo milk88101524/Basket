@@ -12,7 +12,7 @@ class ShoppingViewModel(
     private val repo: ShoppingRepository,
     private val scope: CoroutineScope
 ) {
-    private val _state = MutableStateFlow<ShoppingState>(ShoppingState.Initial)
+    private val _state = MutableStateFlow<ShoppingState>(ShoppingState())
     val state: StateFlow<ShoppingState> = _state.asStateFlow()
 
     fun add(event: ShoppingEvent) {
@@ -24,23 +24,26 @@ class ShoppingViewModel(
     private fun loadData() {
         scope.launch {
             try {
-                var data = repo.getItems()
-                _state.value = ShoppingState.Loaded(data)
+                _state.value = ShoppingState(repo.getItems())
                 repo.sync()
-                data = repo.getItems()
-                _state.value = ShoppingState.Loaded(data)
+                _state.value = ShoppingState(repo.getItems())
             } catch (e: Exception) {
-                _state.value = ShoppingState.Error(e)
+                _state.value = ShoppingState(emptyList(), SyncStatus.Failed(e))
             }
         }
     }
 }
 
-sealed interface ShoppingState {
-    data object Initial: ShoppingState
-    data object Loading: ShoppingState
-    data class Loaded(val items: List<ShoppingItem>): ShoppingState
-    data class Error(val error: Exception): ShoppingState
+data class ShoppingState(
+    val items: List<ShoppingItem> = emptyList(),
+    val syncState: SyncStatus = SyncStatus.Idle,
+)
+
+sealed interface SyncStatus {
+    data object Idle: SyncStatus
+    data object Syncing: SyncStatus
+    data object Done: SyncStatus
+    data class Failed(val error: Exception): SyncStatus
 }
 
 sealed interface ShoppingEvent {
