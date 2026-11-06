@@ -1,17 +1,23 @@
 package dev.milk.basket.domain
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.IOException
+import kotlin.time.Duration.Companion.milliseconds
 
 class FakeLocalDataSource(
     var items: List<ShoppingItem>,
-    var failOnSave: Boolean = false
+    var failOnSave: Boolean = false,
+    val readDelay: Long = 0
 ): LocalDataSource {
-    override suspend fun read(): List<ShoppingItem> = items
+    override suspend fun read(): List<ShoppingItem> {
+        delay(readDelay.milliseconds)
+        return items
+    }
 
     override suspend fun save(items: List<ShoppingItem>) {
         if (failOnSave) {
@@ -25,10 +31,12 @@ class FakeRemoteDataSource(
     var items: List<ShoppingItem>,
     var failOnWrite: Boolean = false,
     var failOnRead: Boolean = false,
+    val readDelay: Long = 0
 ): RemoteDataSource {
     val receipts = mutableListOf<List<ShoppingItem>>()
 
     override suspend fun read(): List<ShoppingItem> {
+        delay(readDelay.milliseconds)
         return if (failOnRead) {
             throw IOException("offline")
         } else {
