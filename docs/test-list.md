@@ -64,7 +64,7 @@ The screen shows the local list first and syncs in the background (see decisions
 
 ## ViewModel
 
-`ShoppingViewModel(repo, scope)` is a plain Kotlin class in the BLoC shape: an event goes in with `add(event)`, the state comes out as `state`. The state is the list plus a sync status (`ShoppingState(items, syncState)`), because the list must show while a sync is running or has failed. Started with the data flow, then the details. The tests look only at the field they are about (`state.items` or `state.syncState`), so a change of the other field does not break them.
+`ShoppingViewModel(repo, scope)` is a plain Kotlin class in the BLoC shape: an event goes in with `add(event)`, the state comes out as `state`. The state is the list plus a sync status (`ShoppingState(items, syncState, changed)`), because the list must show while a sync is running or has failed. Started with the data flow, then the details. The tests look only at the field they are about (`state.items` or `state.syncState`), so a change of the other field does not break them.
 
 - [x] 1a. After `Started` the list is the local one (red `0455082`, green `bfede5f`; the remote holds the same item, so the test does not depend on the sync)
 - [x] 1b. After `Started` the sync runs and the list is read again: local `milk`, remote `egg`, the list becomes `milk` and `egg` (red `9f578ca`, green `a42a96c`)
@@ -73,7 +73,7 @@ The screen shows the local list first and syncs in the background (see decisions
 - [x] 2. The sync ends: the status is `Done` (red `c2d9a01`, green `3822384`)
 - [ ] 3b. The upload fails (`UploadFailed`: the merged list was already saved locally, see decisions 2026-11-02): the list shown is the merged one, not the one read before the sync, and the status is `Failed`. Found while reading test 3: the `catch` keeps the list read before the sync, so after an upload failure the screen would show the old list while the local one is already new. Only the read failure (test 3) is covered today
 - [ ] 3c. The first read of the local list fails: what the state says is still to be decided (nothing was shown yet, so there is no list to keep)
-- [ ] 2b. The items the sync reports as changed (`sync()` returns them, the ViewModel throws them away today) reach the user. Where they go (a field of the state or a separate output) is still to be decided
+- [x] 2b. The items the sync reports as changed (`sync()` returns them) reach the user: after `Started` the state's `changed` holds them (red `5f2fe89`, green `f33501d`; a field of the state, not a separate output, see decisions, 2026-11-06. Clearing it once the user has seen it (a `NoticeDismissed` event) is left for when a test needs it)
 - [ ] `Syncing` while the sync runs: needs a test that can see the state in between
 - [ ] Later: whether and when to tell the user before the upload (left open in decisions, 2026-11-02), `Failed` after an `UploadFailed` also carrying its `changed`, a second sync request while one is running, retry after a failure
 - [ ] Later: replace the one-off read by a Flow of the local list (`LocalDataSource.observe()`), so every writer (sync and the user's own edits) refreshes the screen without a manual re-read

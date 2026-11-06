@@ -56,3 +56,7 @@ The state first was a sealed `Initial / Loading / Loaded / Error`. With the loca
 
 The ViewModel is tested with the real `ShoppingRepository` and the fake data sources, not with an interface in between: the repository is already covered, and an interface with one implementation would be an abstraction nobody asked for. Given up: a broken repository shows up in the ViewModel tests too.
 
+
+## 2026-11-06 What the sync reports as changed goes into the state as `changed`
+
+After a sync, the items `sync()` returns (what the remote changed) are kept in `ShoppingState.changed`, a list that is empty when nothing changed. Why: the list shown (`items`) and the notice about what changed are two uses of the data; working the notice out by comparing the list before and after would tie one to the other, and `sync()` already knows the answer. A list, not a Boolean: a list can tell which items changed, and `isNotEmpty()` gives the Boolean back, the other way round is not possible. It is set in the same update as `Done`. Given up: `changed` and `syncState` are separate fields, so `Idle` with a non-empty `changed` can be written; only the ViewModel keeping to one place that sets it prevents it. Not done yet: clearing it when the user has seen the notice (a `NoticeDismissed` event), because no test needs it yet.
