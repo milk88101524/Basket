@@ -146,4 +146,27 @@ class ShoppingViewModelTest {
 
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `when the upload fails the list is the merged one and the status is Failed`() {
+        runTest {
+            val milk = ShoppingItem(id = "milk", name = "milk", checked = false, deleted = false, updatedAt = 1_000)
+            val milkNew = milk.copy(name = "milk 2L", updatedAt = 2_000)
+            val egg = ShoppingItem(id = "egg", name = "egg", checked = false, deleted = false, updatedAt = 1_000)
+
+            val local = listOf(milk, egg)
+            val remote = listOf(milkNew)
+
+            val fakeLocal = FakeLocalDataSource(local)
+            val fakeRemote = FakeRemoteDataSource(remote, failOnWrite = true)
+            val repo = ShoppingRepository(fakeLocal, fakeRemote)
+
+            val vm = ShoppingViewModel(repo, backgroundScope)
+            vm.add(ShoppingEvent.Started)
+            runCurrent()
+            assertTrue(vm.state.value.syncState is SyncStatus.Failed)
+            assertEquals(listOf(milkNew, egg), vm.state.value.items)
+        }
+    }
 }
