@@ -27,7 +27,7 @@ class ShoppingViewModel(
             try {
                 _state.update { ShoppingState(repo.getItems()) }
                 repo.sync()
-                _state.update { ShoppingState(repo.getItems()) }
+                _state.update { ShoppingState(repo.getItems(), SyncStatus.Done) }
             } catch (e: Exception) {
                 _state.update { it.copy(syncState = SyncStatus.Failed(e)) }
             }
